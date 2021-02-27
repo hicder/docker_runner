@@ -1,7 +1,7 @@
 FROM hicder/docker_runner_base:latest
 
 # Prefer to use clang for clickhouse
-ENV CXX clang++-12
-ENV CC clang-12
+ENV CXX g++-10
+ENV CC gcc-10
 
 WORKDIR /
