@@ -8,9 +8,9 @@ These scripts help to create a Docker container to build, run your code, and sta
 ```
 ./build_base_image.sh
 ```
-* Tag with the right tag
+* If you don't want to build the base image yourself, you can pull from docker
 ```
-docker tag docker_runner_base:latest hicder/docker_runner_base:latest
+docker pull hicder/docker_runner_base:latest
 ```
 * Build the runtime image for your project
 ```
