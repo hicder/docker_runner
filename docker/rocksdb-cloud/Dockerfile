@@ -1,4 +1,4 @@
-FROM docker_runner_base:latest
+FROM hicder/docker_runner_base:latest
 
 WORKDIR /ax-install
 RUN git clone -q --single-branch --depth 1 --branch 1.8.8 https://github.com/aws/aws-sdk-cpp.git
