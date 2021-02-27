@@ -4,13 +4,13 @@ These scripts help to create a Docker container to build, run your code, and sta
 * docker
 * git
 ## Instructions
-* Build the base image
+* Prepare the base image
 ```
-./build_base_image.sh
-```
-* If you don't want to build the base image yourself, you can pull from docker
-```
+# Either pull the prebuilt image
 docker pull hicder/docker_runner_base:latest
+
+# Or build it yourself
+./build_base_image.sh
 ```
 * Build the runtime image for your project
 ```
