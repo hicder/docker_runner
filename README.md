@@ -8,6 +8,10 @@ These scripts help to create a Docker container to build, run your code, and sta
 ```
 ./build_base_image.sh
 ```
+* Tag with the right tag
+```
+docker tag docker_runner_base:latest hicder/docker_runner_base:latest
+```
 * Build the runtime image for your project
 ```
 docker build -t clickhouse_runtime:latest docker/clickhouse
