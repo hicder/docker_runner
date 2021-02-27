@@ -8,16 +8,20 @@ These scripts help to create a Docker container to build, run your code, and sta
 ```
 ./build_base_image.sh
 ```
-* Build the code
+* Build the runtime image for your project
 ```
-./build.sh -j 4 -r /home/hieu/code/rocksdb-cloud -i docker_runner_base:latest "make -j 4"
+docker build -t clickhouse_runtime:latest docker/clickhouse
+```
+* Build the code. I will use Clickhouse as an example.
+```
+./build.sh -j 4 -r /home/hieu/code/Clickhouse -i clickhouse_runtime:latest "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. && ninja -j13"
 ```
 * Start the container for VSCode
-  * In your remote server
+In your remote server. I'll name this container `container_name1`
 ```
-./dev.sh -r /home/hieu/code/rocksdb-cloud -i docker_runner_test:latest -n name1
+./dev.sh -r /home/hieu/code/rocksdb-cloud -i docker_runner_test:latest -n container_name1
 ```
-  * Then, in your local SSH config, add the following. Replace [user] and [ip_address]
+Then, in your local SSH config, add the following. Replace `[user]` and `[ip_address]`
 ```
 Host docker-runner
   HostName docker-runner
@@ -25,5 +29,7 @@ Host docker-runner
   ForwardAgent no
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
-  ProxyCommand ssh [ip_address] docker exec -i name1 sshd -i
+  ProxyCommand ssh [ip_address] docker exec -i container_name1 sshd -i
 ```
+
+Now you can open an Remote Development session from VSCode, and clangd should work there.
