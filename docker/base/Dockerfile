@@ -15,7 +15,11 @@ RUN apt-get update
 
 RUN apt-get install -y gdb g++-10 build-essential software-properties-common git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python libtbb-dev ccache sudo clang-12 clangd-12
+    libssl-dev python libtbb-dev ccache sudo clang-12 clangd-12 python3 python3-pip
+
+RUN pip3 install compiledb
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 
 ENV CXX /usr/bin/g++-10
 ENV CC /usr/bin/gcc-10
