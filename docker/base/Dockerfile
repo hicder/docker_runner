@@ -24,7 +24,7 @@ ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
 # ccache location
-ENV CCACHE_DIR /opt/src/.ccache
+ENV CCACHE_DIR /opt/src/.cache
 
 # By default, use gcc 10
 ENV CXX /usr/bin/g++-10
