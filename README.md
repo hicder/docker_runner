@@ -23,7 +23,7 @@ docker build -t clickhouse_runtime:latest docker/clickhouse
 * Start the container for VSCode
 In your remote server. I'll name this container `container_name1`
 ```
-./dev.sh -r /home/hieu/code/rocksdb-cloud -i docker_runner_test:latest -n container_name1
+./dev.sh -r /home/hieu/code/ClickHouse -i clickhouse_runtime:latest -n container_name1
 ```
 Then, in your local SSH config, add the following. Replace `[user]` and `[ip_address]`
 ```
