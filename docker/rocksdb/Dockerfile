@@ -13,4 +13,6 @@ RUN tar -zxvf v${LIBRDKAFKA_VERSION}.tar.gz
 WORKDIR /ax-install/librdkafka-${LIBRDKAFKA_VERSION}
 RUN ./configure && make && make install
 
+RUN ldconfig
+
 WORKDIR /
