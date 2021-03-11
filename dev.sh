@@ -85,6 +85,7 @@ cd /h
 mkdir .ssh
 ln -sf /host_home/.ssh/authorized_keys .ssh
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server
+ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server-insiders
 ln -sf /host_home/.gitconfig .gitconfig
 
 touch .bashrc  # ensure owned by proper user
