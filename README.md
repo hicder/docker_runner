@@ -16,9 +16,13 @@ docker pull hicder/docker_runner_base:latest
 ```
 ./build_runtime_image.sh -n [project]
 ```
-* Build the code. I will use Clickhouse as an example.
+* Build the code.
 ```
-./build_code.sh -j 4 -r [repo_path] -i clickhouse_runtime:latest "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. && ninja -j13"
+./build_code.sh -j 4 -r [repo_path] -p [project] "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. && ninja -j13"
+```
+Or, build a RocksDB-Cloud repo
+```
+EXTRA_DOCKER_RUN_ARGS="-e USE_AWS=1 -e PORTABLE=1 -e CFLAGS=-march=broadwell" ./build_code.sh -r /home/hieu/code/rocksdb-cloud -p rocksdb -- "make -j13 shared_lib"
 ```
 * Start the container for VSCode
 ```
