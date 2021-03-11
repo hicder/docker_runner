@@ -33,9 +33,9 @@ ENV CC /usr/bin/gcc-10
 # Download prebuilt cmake 3.19
 RUN mkdir -p /ax-install
 WORKDIR /ax-install
-RUN curl -JLO https://cmake.org/files/v3.19/cmake-3.19.0-Linux-x86_64.tar.gz
+RUN curl -JLO https://cmake.org/files/v3.12/cmake-3.12.0-Linux-x86_64.tar.gz
 WORKDIR /usr/local
-RUN tar xfz /ax-install/cmake-3.19.0-Linux-x86_64.tar.gz --strip-components=1
+RUN tar xfz /ax-install/cmake-3.12.0-Linux-x86_64.tar.gz --strip-components=1
 
 RUN ldconfig
 
