@@ -2,7 +2,7 @@
 
 set -eu
 
-args=$(getopt -o '+hr:i:n:' -l 'help,repo:image_tag:,name:' -- "$@")
+args=$(getopt -o '+hr:n:' -l 'help,repo:name:' -- "$@")
 eval set -- "$args"
 
 set +e
@@ -14,8 +14,8 @@ Entry-point for the RocksDB-Cloud test script.
 
 Options:
   -h, --help               Help
-  -i, --image_tag          Base image tag
-  -n, --container_name     Name for this container
+  -r, --repo               Path to the repository
+  -n, --name               Name for the runtime image
 END
 set -e
 
@@ -29,11 +29,7 @@ while :; do
           REPO="$2"
           shift
           ;;
-      -i|--image_tag)
-          TAG="$2"
-          shift
-          ;;
-      -n|--container_name)
+      -n|--name)
           NAME="$2"
           shift
           ;;
@@ -45,13 +41,14 @@ while :; do
   shift
 done
 
+TAG=hicder/"$NAME"_runtime:latest
 echo "Run with tag $TAG, name $NAME"
 
 user=$(id -un)
 user_id=$(id -u)
 group=$(id -gn)
 groupid=$(id -g)
-container=$NAME
+container=docker-runner-$NAME
 SRC_ROOT=$REPO
 : "${EXTRA_DOCKER_RUN_ARGS:=}"
 
@@ -115,5 +112,4 @@ chmod 0755 $setup
 
 # Run setup script
 docker exec $container /host_home/tmp/$(basename $setup)
-
 docker attach $container
