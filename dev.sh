@@ -2,7 +2,7 @@
 
 set -eu
 
-args=$(getopt -o '+hr:n:' -l 'help,repo:name:' -- "$@")
+args=$(getopt -o '+hr:p:n:' -l 'help,repo:,project:,container_name:' -- "$@")
 eval set -- "$args"
 
 set +e
@@ -15,7 +15,8 @@ Entry-point for the RocksDB-Cloud test script.
 Options:
   -h, --help               Help
   -r, --repo               Path to the repository
-  -n, --name               Name for the runtime image
+  -p, --project            Name for the project
+  -n, --container_name     Container name to start
 END
 set -e
 
@@ -29,8 +30,12 @@ while :; do
           REPO="$2"
           shift
           ;;
-      -n|--name)
-          NAME="$2"
+      -p|--project)
+          PROJECT="$2"
+          shift
+          ;;
+      -n|--container_name)
+          CONTAINER_NAME="$2"
           shift
           ;;
       --)
@@ -41,14 +46,14 @@ while :; do
   shift
 done
 
-TAG=hicder/"$NAME"_runtime:latest
-echo "Run with tag $TAG, name $NAME"
+TAG=hicder/"$PROJECT"_runtime:latest
+echo "Run with tag $TAG, project $PROJECT, container name $CONTAINER_NAME"
 
 user=$(id -un)
 user_id=$(id -u)
 group=$(id -gn)
 groupid=$(id -g)
-container=docker-runner-$NAME
+container=$CONTAINER_NAME
 SRC_ROOT=$REPO
 : "${EXTRA_DOCKER_RUN_ARGS:=}"
 
@@ -106,6 +111,8 @@ copy_var \
     GOPATH \
     LSAN_OPTIONS \
     >> /h/.bashrc
+
+cd /opt/src
 
 EOF
 chmod 0755 $setup

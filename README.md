@@ -26,17 +26,17 @@ EXTRA_DOCKER_RUN_ARGS="-e USE_AWS=1 -e PORTABLE=1 -e CFLAGS=-march=broadwell" ./
 ```
 * Start the container for VSCode
 ```
-./dev.sh -r [repo_path] -n [project]
+./dev.sh -r [repo_path] -p [project] -n [container_name]
 ```
 Then, in your local SSH config, add the following. Replace `[user]` and `[ip_address]`
 ```
-Host docker-runner-[project]
-  HostName docker-runner-[project]
+Host [container_name]
+  HostName [container_name]
   User [user]
   ForwardAgent no
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
-  ProxyCommand ssh [ip_address] docker exec -i docker-runner-[project] sshd -i
+  ProxyCommand ssh [ip_address] docker exec -i [container_name] sshd -i
 ```
 
 Now you can open an Remote Development session from VSCode, and clangd should work there.
