@@ -16,7 +16,8 @@ RUN apt-get update
 
 RUN apt-get install -y gdb g++-10 build-essential software-properties-common git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python libtbb-dev ccache sudo clang-12 clangd-12 python3 python3-pip ninja-build
+    libssl-dev python libtbb-dev ccache sudo clang-12 clangd-12 python3 python3-pip ninja-build \
+    libstdc++-10-dev
 
 # This is to generate compile_commands.json for Makefile project
 RUN pip3 install compiledb
