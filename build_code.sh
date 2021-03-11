@@ -2,7 +2,7 @@
 
 set -eu
 
-args=$(getopt -o '+hj:r:i:' -l 'help,parallel_jobs:,repo:,image_tag:' -- "$@")
+args=$(getopt -o '+h:r:p:' -l 'help,repo:,project:' -- "$@")
 eval set -- "$args"
 
 set +e
@@ -11,12 +11,12 @@ Usage:
   $0 [options...]
 
 Entry-point for the RocksDB-Cloud test script.
+Use env EXTRA_DOCKER_RUN_ARGS to add to docker command
 
 Options:
   -h, --help               Help
-  -j, --parallel_jobs      Number of parallel jobs
   -r, --repo               Path to repositories
-  -t, --image_tag          Base image tag
+  -p, --project            Project name
 END
 set -e
 
@@ -26,16 +26,12 @@ while :; do
           echo "$usage_str"
           exit 0
           ;;
-      -j|--parallel_jobs)
-          PARALLEL_JOBS="$2"
-          shift
-          ;;
       -r|--repo)
           REPO="$2"
           shift
           ;;
-      -i|--image_tag)
-          TAG="$2"
+      -p|--project)
+          PROJECT="$2"
           shift
           ;;
       --)
@@ -49,13 +45,11 @@ done
 : "${EXTRA_DOCKER_RUN_ARGS:=}"
 
 SRC_ROOT=$REPO
-echo "Run with $PARALLEL_JOBS jobs, repo $SRC_ROOT, tag $TAG" 
+TAG=hicder/"$PROJECT"_runtime:latest
+echo "Run repo $SRC_ROOT, tag $TAG" 
 echo "Remaining is $@"
 
 echo $EXTRA_DOCKER_RUN_ARGS
 
-# Create build directory 
-docker run -v $SRC_ROOT:/opt/src -w /opt/src -u $UID $EXTRA_DOCKER_RUN_ARGS --rm $TAG /bin/bash -c "mkdir -p build"
-
 # Run the build in `build` directory
-docker run -v $SRC_ROOT:/opt/src -w /opt/src/build -u $UID $EXTRA_DOCKER_RUN_ARGS --rm $TAG /bin/bash -c "$@"
+docker run -v $SRC_ROOT:/opt/src -w /opt/src -u $UID $EXTRA_DOCKER_RUN_ARGS --rm $TAG /bin/bash -c "$@"
