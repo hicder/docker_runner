@@ -50,4 +50,10 @@ RUN apt-get -y install openssh-server locales \
     && locale-gen en_US.UTF-8 \
     | cat >/dev/null
 
+# Support golang
+WORKDIR /tmp
+RUN wget https://golang.org/dl/go1.17.1.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.1.linux-amd64.tar.gz
+ENV PATH="${PATH}:/usr/local/go/bin"
+
 WORKDIR /
