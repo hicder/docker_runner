@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:21.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c"]
@@ -13,13 +13,13 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
 RUN apt-get -qq update -y \
       && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-      && add-apt-repository 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main' \
-      && apt-get -qq install -y llvm-12 \
-      && update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-12 100
+      && add-apt-repository 'deb http://apt.llvm.org/hirsute/ llvm-toolchain-hirsute-13 main' \
+      && apt-get -qq install -y llvm-13 \
+      && update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-13 100
 
 RUN apt-get install -y gdb g++-10 build-essential software-properties-common git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python libtbb-dev ccache sudo clang-12 clangd-12 python3 python3-pip ninja-build \
+    libssl-dev python libtbb-dev ccache sudo clang-13 clangd-13 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev
 
 # This is to generate compile_commands.json for Makefile project
