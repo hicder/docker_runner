@@ -59,6 +59,9 @@ SRC_ROOT=$REPO
 
 docker rm -f $container >/dev/null 2>/dev/null || true
 
+CACHE_DIR=.cache/$REPO
+mkdir -p $HOME/$CACHE_DIR
+
 # Setup vscode things
 mkdir -p ~/.vscode-docker-runner/$REPO
 mkdir -p ~/tmp
@@ -74,19 +77,20 @@ docker run --security-opt seccomp=unconfined \
 #!/bin/bash -e
 
 # Create user and group
-groupadd -g $groupid $group
-useradd -m -c '' -g $groupid -N -u $user_id -s /bin/bash -d /h $user
+groupadd -g $groupid $group || true
+useradd -m -c '' -g $groupid -N -u $user_id -s /bin/bash -d /home/$user $user || true
 
-# Set up user directory in /h, symlinking necessary files
+# Set up user directory, symlinking necessary files
 cat <<EOF1 | sudo -u $user bash -e
 
-cd /h
+cd /home/$user
 
 mkdir .ssh
 ln -sf /host_home/.ssh/authorized_keys .ssh
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server-insiders
 ln -sf /host_home/.gitconfig .gitconfig
+ln -s /host_home/$CACHE_DIR .cache
 
 touch .bashrc  # ensure owned by proper user
 
@@ -111,7 +115,7 @@ copy_var \
     RS_ROOT \
     GOPATH \
     LSAN_OPTIONS \
-    >> /h/.bashrc
+    >> /home/$user/.bashrc
 
 cd /opt/src
 
