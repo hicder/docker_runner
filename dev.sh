@@ -65,6 +65,7 @@ mkdir -p $HOME/$CACHE_DIR
 # Setup vscode things
 mkdir -p ~/.vscode-docker-runner/$REPO
 mkdir -p ~/tmp
+mkdir -p ~/.gotools/$REPO/go/bin
 
 setup=$(mktemp ~/tmp/setup-XXXXXX.sh)
 
@@ -86,11 +87,16 @@ cat <<EOF1 | sudo -u $user bash -e
 cd /home/$user
 
 mkdir .ssh
+mkdir -p go
 ln -sf /host_home/.ssh/authorized_keys .ssh
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server-insiders
 ln -sf /host_home/.gitconfig .gitconfig
-ln -s /host_home/$CACHE_DIR .cache
+ln -sf /host_home/$CACHE_DIR .cache
+
+# Save all go binaries to host.
+# We don't want to share go binaries between repos since some repos require older Go versions.
+ln -sf /host_home/.gotools/$REPO/go/bin go
 
 touch .bashrc  # ensure owned by proper user
 
