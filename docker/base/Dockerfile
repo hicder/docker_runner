@@ -56,4 +56,6 @@ RUN wget https://golang.org/dl/go1.17.1.linux-amd64.tar.gz
 RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.1.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
+RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-13 100
+
 WORKDIR /
