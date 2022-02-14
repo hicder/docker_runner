@@ -5,4 +5,7 @@ RUN curl -1sLf "https://raw.githubusercontent.com/redpanda-data/redpanda/dev/ins
 RUN ldconfig
 ENV PATH="${PATH}:/opt/depot_tools"
 
+WORKDIR /opt/depot_tools
+RUN git config core.filemode false
+
 WORKDIR /
