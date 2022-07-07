@@ -37,4 +37,10 @@ while :; do
 done
 
 echo "Buiding docker/$NAME"
-docker build -t hicder/"$NAME"_runtime:latest docker/$NAME
+
+user=$(id -un)
+user_id=$(id -u)
+group_id=$(id -g)
+group=$(id -gn)
+
+docker build --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$NAME"_runtime:latest docker/$NAME 

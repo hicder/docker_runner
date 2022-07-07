@@ -69,7 +69,6 @@ mkdir -p ~/.gotools/$REPO/go/bin
 
 setup=$(mktemp ~/tmp/setup-XXXXXX.sh)
 
-
 docker run --security-opt seccomp=unconfined \
  -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
  -d --name $container -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
@@ -117,7 +116,6 @@ copy_var() {
 }
 
 copy_var \
-    PATH \
     RS_ROOT \
     GOPATH \
     LSAN_OPTIONS \
@@ -130,4 +128,6 @@ chmod 0755 $setup
 
 # Run setup script
 docker exec $container /host_home/tmp/$(basename $setup)
-docker attach $container
+
+# docker attach $container
+docker exec -it -u $user_id $container /bin/bash
