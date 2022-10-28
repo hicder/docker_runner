@@ -8,10 +8,9 @@ RUN apt-get -y install byacc
 RUN apt-get -y install flex
 RUN apt-get -y install automake
 RUN apt-get -y install libtool binutils-dev libiberty-dev bison
+RUN apt-get -y install clang-14
 
-
-RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
+ENV CXX clang++14
+ENV CC clang-14
 
 WORKDIR /

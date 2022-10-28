@@ -19,7 +19,7 @@ RUN apt-get -qq update -y \
 
 RUN apt-get install -y gdb g++-10 build-essential software-properties-common git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python2 libtbb-dev ccache sudo clang-13 clangd-13 python3 python3-pip ninja-build \
+    libssl-dev python2 libtbb-dev ccache sudo clang-14 clangd-13 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev
 
 # This is to generate compile_commands.json for Makefile project
@@ -57,6 +57,8 @@ RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.1.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-13 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
 RUN apt install -y bear
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
