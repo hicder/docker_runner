@@ -7,20 +7,10 @@ RUN apt-get -qq update -y && \
     apt-get -qq upgrade -y && \
     apt-get -qq install -y apt-utils wget
 
-# Add clang-12 repository
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-
-RUN apt-get -qq update -y \
-      && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
-      && add-apt-repository 'deb http://apt.llvm.org/hirsute/ llvm-toolchain-hirsute-13 main' \
-      && apt-get -qq install -y llvm-13 \
-      && update-alternatives --install /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-13 100
-
 RUN apt-get install -y gdb g++-10 build-essential software-properties-common git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python2 libtbb-dev ccache sudo clang-14 clangd-13 python3 python3-pip ninja-build \
-    libstdc++-10-dev libbison-dev libreadline-dev
+    libssl-dev python2 libtbb-dev ccache sudo clang-14 clangd-14 python3 python3-pip ninja-build \
+    libstdc++-10-dev libbison-dev libreadline-dev cmake
 
 # This is to generate compile_commands.json for Makefile project
 RUN pip3 install compiledb
@@ -30,16 +20,9 @@ ENV LANG C.UTF-8
 # ccache location
 ENV CCACHE_DIR /opt/src/.cache
 
-# By default, use gcc 10
-ENV CXX /usr/bin/g++-10
-ENV CC /usr/bin/gcc-10
-
-# Download prebuilt cmake 3.19
-RUN mkdir -p /ax-install
-WORKDIR /ax-install
-RUN curl -JLO https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-linux-x86_64.tar.gz
-WORKDIR /usr/local
-RUN tar xfz /ax-install/cmake-3.22.2-linux-x86_64.tar.gz --strip-components=1
+# By default, use clang for compilation
+ENV CXX /usr/bin/clang++-14
+ENV CC /usr/bin/clang-14
 
 RUN ldconfig
 
@@ -52,11 +35,11 @@ RUN apt-get -y install openssh-server locales \
 
 # Support golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.17.1.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.1.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.19.2.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.2.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
-RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-13 100
+RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-14 100
 RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100
 RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
 RUN apt install -y bear

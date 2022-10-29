@@ -1,8 +1,10 @@
 FROM hicder/docker_runner_base:latest
 
+RUN apt install -y lld
+
 # Prefer to use clang for clickhouse
-ENV CXX clang++-13
-ENV CC clang-13
+ENV CXX clang++-14
+ENV CC clang-14
 
 ARG group_id
 ARG group
