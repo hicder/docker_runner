@@ -7,22 +7,21 @@ RUN apt-get -qq update -y && \
     apt-get -qq upgrade -y && \
     apt-get -qq install -y apt-utils wget
 
-RUN apt-get install -y gdb g++-10 build-essential software-properties-common git \
-    curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python2 libtbb-dev ccache sudo clang-14 clangd-14 python3 python3-pip ninja-build \
-    libstdc++-10-dev libbison-dev libreadline-dev cmake
+RUN apt-get install -y software-properties-common 
+RUN wget --no-check-certificate -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main'
+RUN add-apt-repository ppa:neovim-ppa/stable
 
-# This is to generate compile_commands.json for Makefile project
-RUN pip3 install compiledb
+RUN apt-get install -y gdb g++-10 build-essential git \
+    curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
+    libssl-dev python2 libtbb-dev ccache sudo clang-15 clangd-15 python3 python3-pip ninja-build \
+    libstdc++-10-dev libbison-dev libreadline-dev cmake bear neovim zsh fzf
+
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
 # ccache location
 ENV CCACHE_DIR /opt/src/.cache
-
-# By default, use clang for compilation
-ENV CXX /usr/bin/clang++-14
-ENV CC /usr/bin/clang-14
 
 RUN ldconfig
 
@@ -35,15 +34,46 @@ RUN apt-get -y install openssh-server locales \
 
 # Support golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.19.2.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.2.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.19.3.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.3.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
-RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-14 100
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-14 100
-RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
-RUN apt install -y bear
-
+RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-15 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
+# By default, use clang for compilation
+ENV CXX /usr/bin/clang++
+ENV CC /usr/bin/clang
+
+# Add current user in order to install neovim
+ARG group_id
+ARG group
+ARG user_id
+ARG user
+
+RUN echo "$user"
+RUN echo "$user_id"
+RUN echo "$group"
+RUN echo "$group_id"
+
+RUN groupadd -g $group_id $group
+RUN useradd -m -c '' -g $group_id -N -u $user_id -s /bin/bash -d /home/$user $user
+
+USER $user
+
+WORKDIR /home/$user
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN git clone https://github.com/hicder/dotfiles.git && cd dotfiles && sh install.sh
+
+# Install rust
+ENV HOME /home/$user
+ENV RUSTUP_HOME $HOME/.rustup
+ENV CARGO_HOME $HOME/.cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain nightly
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.zshrc
+
+# Done - back to root
+USER root
 WORKDIR /

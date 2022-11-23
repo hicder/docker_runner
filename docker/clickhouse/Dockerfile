@@ -2,10 +2,6 @@ FROM hicder/docker_runner_base:latest
 
 RUN apt install -y lld
 
-# Prefer to use clang for clickhouse
-ENV CXX clang++-14
-ENV CC clang-14
-
 ARG group_id
 ARG group
 ARG user_id
@@ -27,6 +23,5 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-too
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
 
 USER root
-
 
 WORKDIR /

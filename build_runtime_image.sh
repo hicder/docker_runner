@@ -10,7 +10,7 @@ read -r -d '' usage_str <<END
 Usage:
   $0 [options...]
 
-Entry-point for the RocksDB-Cloud test script.
+Entry-point for the runtime image build script.
 
 Options:
   -h, --help               Help

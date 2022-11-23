@@ -130,4 +130,4 @@ chmod 0755 $setup
 docker exec $container /host_home/tmp/$(basename $setup)
 
 # docker attach $container
-docker exec -it -u $user_id $container /bin/bash
+docker exec -it -u $user_id $container /bin/zsh
