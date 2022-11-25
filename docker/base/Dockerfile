@@ -23,6 +23,7 @@ ENV LANG C.UTF-8
 # ccache location
 ENV CCACHE_DIR /opt/src/.cache
 
+# Force linking libraries
 RUN ldconfig
 
 # This is so that VSCode can open a Remote Development session to this container
@@ -32,7 +33,7 @@ RUN apt-get -y install openssh-server locales \
     && locale-gen en_US.UTF-8 \
     | cat >/dev/null
 
-# Support golang
+# Install golang
 WORKDIR /tmp
 RUN wget https://golang.org/dl/go1.19.3.linux-amd64.tar.gz
 RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.3.linux-amd64.tar.gz
@@ -47,7 +48,7 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 ENV CXX /usr/bin/clang++
 ENV CC /usr/bin/clang
 
-# Add current user in order to install neovim
+# Add current user
 ARG group_id
 ARG group
 ARG user_id
