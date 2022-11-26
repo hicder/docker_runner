@@ -10,12 +10,11 @@ RUN apt-get -qq update -y && \
 RUN apt-get install -y software-properties-common 
 RUN wget --no-check-certificate -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 RUN add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main'
-RUN add-apt-repository ppa:neovim-ppa/stable
 
 RUN apt-get install -y gdb g++-10 build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
     libssl-dev python2 libtbb-dev ccache sudo clang-15 clangd-15 python3 python3-pip ninja-build \
-    libstdc++-10-dev libbison-dev libreadline-dev cmake bear neovim zsh fzf
+    libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
@@ -48,6 +47,12 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 ENV CXX /usr/bin/clang++
 ENV CC /usr/bin/clang
 
+# Install neovim 0.8.0 manually
+RUN mkdir -p /opt/bin
+WORKDIR /opt/bin
+RUN wget https://github.com/neovim/neovim/releases/download/v0.8.0/nvim-linux64.tar.gz
+RUN tar xzvf nvim-linux64.tar.gz
+
 # Add current user
 ARG group_id
 ARG group
@@ -74,6 +79,9 @@ ENV RUSTUP_HOME $HOME/.rustup
 ENV CARGO_HOME $HOME/.cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain nightly
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.zshrc
+
+RUN /opt/bin/nvim-linux64/bin/nvim --headless -c 'autocmd User PackerComplete quitall'
+RUN /opt/bin/nvim-linux64/bin/nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
 # Done - back to root
 USER root
