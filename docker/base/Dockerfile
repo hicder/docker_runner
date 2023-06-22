@@ -80,9 +80,6 @@ ENV CARGO_HOME $HOME/.cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain nightly
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.zshrc
 
-RUN /opt/bin/nvim-linux64/bin/nvim --headless -c 'autocmd User PackerComplete quitall'
-RUN /opt/bin/nvim-linux64/bin/nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
-
 # Done - back to root
 USER root
 WORKDIR /
