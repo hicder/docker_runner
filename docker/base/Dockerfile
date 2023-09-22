@@ -9,11 +9,11 @@ RUN apt-get -qq update -y && \
 
 RUN apt-get install -y software-properties-common 
 RUN wget --no-check-certificate -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-RUN add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main'
+RUN add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
 
-RUN apt-get install -y gdb g++-10 build-essential git \
+RUN apt-get install -y gdb g++ build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python2 libtbb-dev ccache sudo clang-15 clangd-15 python3 python3-pip ninja-build \
+    libssl-dev python2 libtbb-dev ccache sudo clang-16 clangd-16 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip
 
 ENV LC_ALL C.UTF-8
@@ -34,13 +34,13 @@ RUN apt-get -y install openssh-server locales \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.19.3.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.3.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.21.1.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.1.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
-RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-15 100
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100
-RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
+RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-16 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 # By default, use clang for compilation
