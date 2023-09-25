@@ -82,4 +82,8 @@ RUN echo 'source $HOME/.cargo/env' >> $HOME/.zshrc
 
 # Done - back to root
 USER root
+
+# Add $user as sudoer - we might need this down the road.
+RUN usermod -aG sudo $user
+
 WORKDIR /
