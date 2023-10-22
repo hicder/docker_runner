@@ -14,7 +14,7 @@ docker pull hicder/docker_runner_base:latest
 ```
 * Build the runtime image for your project. [project] needs to be under `docker/` directory
 ```
-./build_runtime_image.sh -n [project]
+./build_runtime_image.sh -p [project]
 ```
 * Build the code.
 ```

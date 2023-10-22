@@ -2,7 +2,7 @@
 
 set -eu
 
-args=$(getopt -o '+hn:' -l 'help,name:' -- "$@")
+args=$(getopt -o '+hp:' -l 'help,name:' -- "$@")
 eval set -- "$args"
 
 set +e
@@ -14,7 +14,7 @@ Entry-point for the runtime image build script.
 
 Options:
   -h, --help               Help
-  -n, --name               Name for this container
+  -p, --project            Name for this container
 END
 set -e
 
@@ -24,8 +24,8 @@ while :; do
           echo "$usage_str"
           exit 0
           ;;
-      -n|--name)
-          NAME="$2"
+      -p|--project)
+          PROJECT="$2"
           shift
           ;;
       --)
@@ -36,11 +36,11 @@ while :; do
   shift
 done
 
-echo "Buiding docker/$NAME"
+echo "Buiding docker/$PROJECT"
 
 user=$(id -un)
 user_id=$(id -u)
 group_id=$(id -g)
 group=$(id -gn)
 
-docker build --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$NAME"_runtime:latest docker/$NAME
+docker build --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest docker/$PROJECT
