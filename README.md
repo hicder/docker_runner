@@ -18,7 +18,7 @@ docker pull hicder/docker_runner_base:latest
 ```
 * Build the code.
 ```
-./build_code.sh -r [repo_path] -p [project] "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. && ninja -j13"
+./build_code.sh -r [repo_path] -p [project] "mkdir build && cd build && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. && ninja -j13"
 ```
 Or, build a RocksDB-Cloud repo
 ```

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c"]
@@ -8,12 +8,9 @@ RUN apt-get -qq update -y && \
     apt-get -qq install -y apt-utils wget
 
 RUN apt-get install -y software-properties-common 
-RUN wget --no-check-certificate -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-RUN add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main'
-
 RUN apt-get install -y gdb g++ build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev python2 libtbb-dev ccache sudo clang-16 clangd-16 python3 python3-pip ninja-build \
+    libssl-dev libtbb-dev ccache sudo clang-19 clangd-19 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip
 
 ENV LC_ALL C.UTF-8
@@ -34,13 +31,13 @@ RUN apt-get -y install openssh-server locales \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.21.1.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.1.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.24.5.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
-RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-16 100
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100
-RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
+RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 # By default, use clang for compilation
@@ -50,8 +47,8 @@ ENV CC /usr/bin/clang
 # Install neovim 0.8.0 manually
 RUN mkdir -p /opt/bin
 WORKDIR /opt/bin
-RUN wget https://github.com/neovim/neovim/releases/download/v0.8.0/nvim-linux64.tar.gz
-RUN tar xzvf nvim-linux64.tar.gz
+RUN wget https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
+RUN tar xzvf nvim-linux-x86_64.tar.gz
 
 # Add current user
 ARG group_id
@@ -65,13 +62,13 @@ RUN echo "$group"
 RUN echo "$group_id"
 
 RUN groupadd -g $group_id $group
+RUN deluser ubuntu
 RUN useradd -m -c '' -g $group_id -N -u $user_id -s /bin/bash -d /home/$user $user
 
 USER $user
 
 WORKDIR /home/$user
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-RUN git clone https://github.com/hicder/dotfiles.git && cd dotfiles && sh install.sh
 
 # Install rust
 ENV HOME /home/$user
