@@ -7,11 +7,11 @@ RUN apt-get -qq update -y && \
     apt-get -qq upgrade -y && \
     apt-get -qq install -y apt-utils wget
 
-RUN apt-get install -y software-properties-common 
-RUN apt-get install -y gdb g++ build-essential git \
+RUN apt-get install -y software-properties-common gdb g++ build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
     libssl-dev libtbb-dev ccache sudo clang-19 clangd-19 python3 python3-pip ninja-build \
-    libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip
+    libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip openssh-server \
+    locales meson flex bison liburing-dev pkg-config
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
@@ -50,6 +50,8 @@ WORKDIR /opt/bin
 RUN wget https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
 RUN tar xzvf nvim-linux-x86_64.tar.gz
 
+RUN deluser ubuntu || true
+
 # Add current user
 ARG group_id
 ARG group
@@ -61,9 +63,8 @@ RUN echo "$user_id"
 RUN echo "$group"
 RUN echo "$group_id"
 
-RUN groupadd -g $group_id $group
-RUN deluser ubuntu
-RUN useradd -m -c '' -g $group_id -N -u $user_id -s /bin/bash -d /home/$user $user
+RUN groupadd -g $group_id $group || true
+RUN useradd -m -c '' -g $group_id -N -u $user_id -s /bin/bash -d /home/$user $user || true
 
 USER $user
 
