@@ -2,7 +2,7 @@
 
 set -eu
 
-args=$(getopt -o '+hp:' -l 'help,name:' -- "$@")
+args=$(getopt -o '+hp:r:' -l 'help,project:,repo:' -- "$@")
 eval set -- "$args"
 
 set +e
@@ -15,6 +15,7 @@ Entry-point for the runtime image build script.
 Options:
   -h, --help               Help
   -p, --project            Name for this container
+  -r, --repo               Path to the repository
 END
 set -e
 
@@ -28,6 +29,10 @@ while :; do
           PROJECT="$2"
           shift
           ;;
+      -r|--repo)
+          REPO="$2"
+          shift
+          ;;
       --)
           shift
           break
@@ -37,10 +42,11 @@ while :; do
 done
 
 echo "Buiding docker/$PROJECT"
+echo "Repo is $REPO"
 
 user=$(id -un)
 user_id=$(id -u)
 group_id=$(id -g)
 group=$(id -gn)
 
-docker build --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest docker/$PROJECT
+docker build --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest -f docker/$PROJECT/Dockerfile $REPO
