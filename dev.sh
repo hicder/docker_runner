@@ -90,6 +90,8 @@ mkdir -p go
 ln -sf /host_home/.ssh/authorized_keys .ssh
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server-insiders
+ln -sf /host_home/.vscode-docker-runner/$REPO .cursor-server
+ln -sf /host_home/.vscode-docker-runner/$REPO .windsurf-server
 ln -sf /host_home/.gitconfig .gitconfig
 ln -sf /host_home/$CACHE_DIR .cache
 
