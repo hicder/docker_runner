@@ -11,15 +11,13 @@ RUN apt-get install -y software-properties-common gdb g++ build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
     libssl-dev libtbb-dev ccache sudo clang-19 clangd-19 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip openssh-server \
-    locales meson flex bison liburing-dev pkg-config
+    locales meson flex bison liburing-dev pkg-config nodejs npm python3-venv
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
 # ccache location
-ENV CCACHE_DIR /opt/src/.cache
-
-# Force linking libraries
+ENV CCACHE_DIR /opt/src/.cache # Force linking libraries
 RUN ldconfig
 
 # This is so that VSCode can open a Remote Development session to this container
@@ -31,8 +29,8 @@ RUN apt-get -y install openssh-server locales \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.24.5.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.24.5.linux-arm64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-arm64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
@@ -44,11 +42,13 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 ENV CXX /usr/bin/clang++
 ENV CC /usr/bin/clang
 
-# Install neovim 0.8.0 manually
-RUN mkdir -p /opt/bin
-WORKDIR /opt/bin
-RUN wget https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz
-RUN tar xzvf nvim-linux-x86_64.tar.gz
+# Install neovim 0.11.3 manually
+WORKDIR /tmp
+RUN wget https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-arm64.tar.gz
+RUN tar -xzvf nvim-linux-arm64.tar.gz
+RUN cp -r nvim-linux-arm64/bin/* /usr/local/bin
+RUN cp -r nvim-linux-arm64/share/* /usr/local/share
+RUN cp -r nvim-linux-arm64/lib/* /usr/local/lib
 
 RUN deluser ubuntu || true
 
@@ -77,6 +77,17 @@ ENV RUSTUP_HOME $HOME/.rustup
 ENV CARGO_HOME $HOME/.cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain nightly
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.zshrc
+
+RUN mkdir -p /home/$user/.config || true
+WORKDIR /home/$user/.config
+RUN git clone --branch container https://github.com/hicder/lazyvim.git nvim
+
+RUN mkdir -p /home/$user/code || true
+WORKDIR /home/$user/code
+RUN git clone --branch container https://github.com/hicder/dotfiles.git
+
+WORKDIR /home/$user/code/dotfiles
+RUN ./install.sh
 
 # Done - back to root
 USER root
