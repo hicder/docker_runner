@@ -87,13 +87,19 @@ cd /home/$user
 
 mkdir .ssh
 mkdir -p go
+mkdir -p .local/share
 ln -sf /host_home/.ssh/authorized_keys .ssh
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server-insiders
 ln -sf /host_home/.vscode-docker-runner/$REPO .cursor-server
 ln -sf /host_home/.vscode-docker-runner/$REPO .windsurf-server
 ln -sf /host_home/.gitconfig .gitconfig
+ln -sf /host_home/.config .config
 ln -sf /host_home/$CACHE_DIR .cache
+ln -sf /host_home/.local/share/opencode .local/share/opencode
+
+# Symlink cargo registry
+ln -sf /host_home/.cargo/registry .cargo/registry
 
 # Save all go binaries to host.
 # We don't want to share go binaries between repos since some repos require older Go versions.
