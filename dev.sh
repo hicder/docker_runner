@@ -57,6 +57,17 @@ container=$CONTAINER_NAME
 SRC_ROOT=$REPO
 : "${EXTRA_DOCKER_RUN_ARGS:=}"
 
+# Check if container is already running
+echo "Checking for container: $container"
+if docker ps --format "{{.Names}}" | grep -q "^${container}$"; then
+    echo "Container $container is already running, attaching to it"
+    docker exec -it -u $user_id $container /bin/zsh
+    exit 0
+else
+    echo "Container $container is not currently running"
+fi
+
+# Remove any stopped container with the same name
 docker rm -f $container >/dev/null 2>/dev/null || true
 
 CACHE_DIR=.cache/$REPO
@@ -78,7 +89,7 @@ docker run --security-opt seccomp=unconfined \
 
 # Create user and group
 groupadd -g $groupid $group || true
-useradd -m -c '' -g $groupid -N -u $user_id -s /bin/bash -d /home/$user $user || true
+useradd -m -c '' -g $groupid -N -u $user_id -s /bin/zsh -d /home/$user $user || true
 
 # Set up user directory, symlinking necessary files
 cat <<EOF1 | sudo -u $user bash -e
@@ -112,6 +123,25 @@ cat <<EOF2 > .gdbinit
 set print static off
 set print pretty on
 EOF2
+
+# Create .gitignore file
+cat <<EOF2 > .gitignore
+.aider*
+.augmentignore
+scratch/
+.clangd
+.vscode
+.opencode
+OpenCode.md
+t[0-9].json
+uv.lock
+.devcontainer
+build
+.cache
+EOF2
+
+# Configure git to use the global gitignore
+git config --global core.excludesfile ~/.gitignore
 
 EOF1
 
