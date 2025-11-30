@@ -89,6 +89,10 @@ RUN git clone --branch container https://github.com/hicder/dotfiles.git
 WORKDIR /home/$user/code/dotfiles
 RUN ./install.sh
 
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="${PATH}:/home/${user}/.bun/bin"
+RUN /home/${user}/.bun/bin/bun add -g opencode-ai || true
+
 # Done - back to root
 USER root
 
