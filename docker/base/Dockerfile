@@ -5,13 +5,12 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt-get -qq update -y && \
     apt-get -qq upgrade -y && \
-    apt-get -qq install -y apt-utils wget
-
-RUN apt-get install -y software-properties-common gdb g++ build-essential git \
+    apt-get -qq install -y apt-utils wget && \
+    apt-get install -y software-properties-common gdb g++ build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
     libssl-dev libtbb-dev ccache sudo clang-19 clangd-19 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip openssh-server \
-    locales meson flex bison liburing-dev pkg-config nodejs npm python3-venv ripgrep
+    locales meson flex bison liburing-dev pkg-config nodejs npm python3-venv ripgrep libresolv-wrapper
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
@@ -29,8 +28,8 @@ RUN apt-get -y install openssh-server locales \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.24.5.linux-arm64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-arm64.tar.gz
+RUN wget https://golang.org/dl/go1.24.5.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
@@ -44,11 +43,11 @@ ENV CC /usr/bin/clang
 
 # Install neovim 0.11.3 manually
 WORKDIR /tmp
-RUN wget https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-arm64.tar.gz
-RUN tar -xzvf nvim-linux-arm64.tar.gz
-RUN cp -r nvim-linux-arm64/bin/* /usr/local/bin
-RUN cp -r nvim-linux-arm64/share/* /usr/local/share
-RUN cp -r nvim-linux-arm64/lib/* /usr/local/lib
+RUN wget https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-x86_64.tar.gz
+RUN tar -xzvf nvim-linux-x86_64.tar.gz
+RUN cp -r nvim-linux-x86_64/bin/* /usr/local/bin
+RUN cp -r nvim-linux-x86_64/share/* /usr/local/share
+RUN cp -r nvim-linux-x86_64/lib/* /usr/local/lib
 
 RUN deluser ubuntu || true
 
