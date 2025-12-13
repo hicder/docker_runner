@@ -80,7 +80,7 @@ RUN apt-get purge -y \
  && apt-get autoremove -y
 
 # This is so that VSCode can open a Remote Development session to this container
-RUN apt-get -y install openssh-server locales zsh sudo \
+RUN apt-get -y install openssh-server locales zsh sudo libc6-dev \
     && mkdir -p /var/run/sshd \
     && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd \
     && locale-gen en_US.UTF-8 \
