@@ -162,5 +162,11 @@ RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="${PATH}:/home/${user}/.bun/bin"
 RUN /home/${user}/.bun/bin/bun add -g opencode-ai || true
 
+# Install CRL's version of Go
+WORKDIR /home/$user/
+RUN git clone --branch cockroach-go1.23.6 https://github.com/cockroachdb/go.git
+WORKDIR /home/$user/go/src
+RUN ./make.bash
+
 USER root
 WORKDIR /

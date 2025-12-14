@@ -114,10 +114,6 @@ ln -sf /host_home/.claude .claude
 # Symlink cargo registry
 ln -sf /host_home/.cargo/registry .cargo/registry
 
-# Save all go binaries to host.
-# We don't want to share go binaries between repos since some repos require older Go versions.
-ln -sf /host_home/.gotools/$REPO/go/bin go
-
 touch .bashrc  # ensure owned by proper user
 
 # gdb sometimes segfaults without "print static off"
