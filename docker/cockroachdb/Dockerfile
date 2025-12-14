@@ -100,8 +100,8 @@ RUN case ${TARGETPLATFORM} in \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.24.5.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-amd64.tar.gz
+RUN wget https://storage.googleapis.com/public-bazel-artifacts/go/20250818-202337/go1.23.12.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.12.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 # Install Bazelisk as Bazel.
@@ -161,12 +161,6 @@ RUN ./install.sh
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="${PATH}:/home/${user}/.bun/bin"
 RUN /home/${user}/.bun/bin/bun add -g opencode-ai || true
-
-# Install CRL's version of Go
-WORKDIR /home/$user/
-RUN git clone --branch cockroach-go1.23.6 https://github.com/cockroachdb/go.git
-WORKDIR /home/$user/go/src
-RUN ./make.bash
 
 USER root
 WORKDIR /

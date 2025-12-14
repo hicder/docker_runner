@@ -1,0 +1,29 @@
+{
+    "go.toolsEnvVars": {
+        "CGO_ENABLED": "1",
+        "CC": "/usr/bin/gcc",
+        "CXX": "/usr/bin/g++"
+    },
+    "go.enableCodeLens": {
+        "runtest": false
+    },
+    "go.buildTags": "bazel",
+    "gopls": {
+        "formatting.gofumpt": true,
+        "formatting.local": "github.com/bazelbuild/rules_go",
+        "ui.completion.usePlaceholders": true,
+        "ui.semanticTokens": true,
+        "ui.codelenses": {
+            "gc_details": false,
+            "regenerate_cgo": true,
+            "generate": false,
+            "test": false,
+            "tidy": false,
+            "upgrade_dependency": false,
+            "vendor": false
+        }
+    },
+    "go.useLanguageServer": true,
+    "go.lintOnSave": "off",
+    "go.vetOnSave": "off"
+}
