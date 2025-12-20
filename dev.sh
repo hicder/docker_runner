@@ -111,6 +111,7 @@ ln -sf /host_home/.local/share/opencode .local/share/opencode
 ln -sf /host_home/.claude .claude
 
 # Symlink a few configs
+mkdir -p .config
 ln -sf /host_home/.config/opencode .config/opencode
 ln -sf /host_home/.config/nvim .config/nvim
 
