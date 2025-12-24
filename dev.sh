@@ -96,10 +96,10 @@ cat <<EOF1 | sudo -u $user bash -e
 
 cd /home/$user
 
-mkdir .ssh
-mkdir -p go
-mkdir -p .local/share
-ln -sf /host_home/.ssh/authorized_keys .ssh
+mkdir .ssh || true
+mkdir -p go || true
+mkdir -p .local/share || true
+ln -sf /host_home/.ssh/authorized_keys .ssh/authorized_keys
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server
 ln -sf /host_home/.vscode-docker-runner/$REPO .vscode-server-insiders
 ln -sf /host_home/.vscode-docker-runner/$REPO .cursor-server

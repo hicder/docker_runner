@@ -160,8 +160,12 @@ RUN ./install.sh
 
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="${PATH}:/home/${user}/.bun/bin"
-RUN /home/${user}/.bun/bin/bun add -g opencode-ai || true
-RUN /home/${user}/.bun/bin/bun add -g @anthropic-ai/claude-code || true
+
+# Install opencode
+RUN curl -fsSL https://opencode.ai/install | bash
+
+# Install claude code
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 USER root
 WORKDIR /
