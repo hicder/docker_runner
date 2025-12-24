@@ -108,7 +108,7 @@ ln -sf /host_home/.vscode-docker-runner/$REPO .antigravity-server
 ln -sf /host_home/.gitconfig .gitconfig
 ln -sf /host_home/$CACHE_DIR .cache
 ln -sf /host_home/.local/share/opencode .local/share/opencode
-ln -sf /host_home/.claude .claude
+ln -sf /host_home/.claude/settings.json .claude/settings.json
 
 # Symlink a few configs
 mkdir -p .config
@@ -117,6 +117,9 @@ ln -sf /host_home/.config/nvim .config/nvim
 
 # Symlink cargo registry
 ln -sf /host_home/.cargo/registry .cargo/registry
+
+# Set hasCompletedOnboarding to true in .claude.json
+jq '. + {"hasCompletedOnboarding": true}' .claude.json > .claude.json.tmp && mv .claude.json.tmp .claude.json
 
 touch .bashrc  # ensure owned by proper user
 

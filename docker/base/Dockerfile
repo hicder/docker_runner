@@ -10,7 +10,8 @@ RUN apt-get -qq update -y && \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
     libssl-dev libtbb-dev ccache sudo clang-19 clangd-19 python3 python3-pip ninja-build \
     libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip openssh-server \
-    locales meson flex bison liburing-dev pkg-config nodejs npm python3-venv ripgrep libresolv-wrapper
+    locales meson flex bison liburing-dev pkg-config nodejs npm python3-venv ripgrep libresolv-wrapper \
+    nano jq
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8

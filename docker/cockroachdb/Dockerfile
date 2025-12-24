@@ -29,6 +29,8 @@ RUN apt-get update \
     python3.8-venv \
     unzip \
     zip \
+    nano \
+    jq \
  && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 \
     --slave /usr/bin/clang++ clang++ /usr/bin/clang++-10 \
  && apt-get clean
