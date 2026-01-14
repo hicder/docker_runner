@@ -164,10 +164,19 @@ RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="${PATH}:/home/${user}/.bun/bin"
 
 # Install opencode
-RUN curl -fsSL https://opencode.ai/install | bash
+RUN bun add -g opencode-ai
 
 # Install claude code
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
+# Install nodejs npm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+RUN echo '. $HOME/.nvm/nvm.sh' >> $HOME/.zshrc
+RUN echo '. $HOME/.nvm/nvm.sh' >> $HOME/.bashrc
+
+# Install gemini-cli
+RUN bun install -g @google/gemini-cli@preview
+
 USER root
 WORKDIR /
+
