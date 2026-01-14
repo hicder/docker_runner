@@ -98,6 +98,14 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 # Done - back to root
 USER root
 
+# Install nodejs npm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+RUN echo '. $HOME/.nvm/nvm.sh' >> $HOME/.zshrc
+RUN echo '. $HOME/.nvm/nvm.sh' >> $HOME/.bashrc
+
+# Install gemini-cli
+RUN bun install -g @google/gemini-cli@preview
+
 # Add $user as sudoer - we might need this down the road.
 RUN usermod -aG sudo $user
 

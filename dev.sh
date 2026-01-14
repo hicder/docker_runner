@@ -82,7 +82,7 @@ setup=$(mktemp ~/tmp/setup-XXXXXX.sh)
 
 docker run --security-opt seccomp=unconfined \
  -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
- -d --name $container -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
+ -d --name $container -v $HOME:/host_home --network host --cap-add SYS_PTRACE $TAG bash
 
  cat > $setup <<EOF
 #!/bin/bash -e
