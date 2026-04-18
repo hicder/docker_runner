@@ -7,8 +7,6 @@ RUN apt-get update && apt-get install -y \
     llvm-dev \
     libllvm-ocaml-dev \
     protobuf-compiler \
-    libprotobuf-dev \
-    libprotoc-dev \
     libgtest-dev \
     libgmock-dev \
     libxml2-dev \
@@ -22,14 +20,7 @@ RUN apt-get update && apt-get install -y \
     libre2-dev \
     libssl-dev \
     libopenblas-dev \
-    libabsl-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# Protobuf cmake config is in /usr/lib/cmake/protobuf - link to vespa-deps
-RUN mkdir -p /opt/vespa-deps/lib/cmake && \
-    ln -sf /usr/lib/x86_64-linux-gnu/cmake/protobuf /opt/vespa-deps/lib/cmake/protobuf && \
-    ln -sf /usr/include/google /opt/vespa-deps/include/google && \
-    ln -sf /usr/lib/x86_64-linux-gnu/libprotobuf*.so* /opt/vespa-deps/lib/ 2>/dev/null || true
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
@@ -40,6 +31,9 @@ RUN wget -O /tmp/clangd.zip https://github.com/clangd/clangd/releases/download/2
     mv /usr/local/clangd_22.1.0/lib/clang /usr/local/lib/ 2>/dev/null || true && \
     rm -rf /usr/local/clangd_22.1.0 /tmp/clangd.zip
 
+RUN mkdir -p /opt/vespa-deps/lib || true
+RUN mkdir -p /opt/vespa-deps/include || true
+
 # Install ONNX Runtime
 RUN wget -O /tmp/onnxruntime.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.24.4/onnxruntime-linux-x64-1.24.4.tgz && \
     tar -xzf /tmp/onnxruntime.tgz -C /opt && \
@@ -47,6 +41,77 @@ RUN wget -O /tmp/onnxruntime.tgz https://github.com/microsoft/onnxruntime/releas
     rm /tmp/onnxruntime.tgz && \
     mkdir -p /opt/vespa-deps/include && \
     ln -sf /opt/onnxruntime/include /opt/vespa-deps/include/onnxruntime && \
-    ln -sf /opt/onnxruntime/lib/libonnxruntime*.so* /opt/vespa-deps/lib/ 2>/dev/null || true
+    ln -sf /opt/onnxruntime/lib/libonnxruntime*.so* /opt/vespa-deps/lib/
+
+WORKDIR /tmp
+
+ENV CMAKE_PREFIX_PATH=/opt/vespa-deps
+
+RUN git clone https://github.com/abseil/abseil-cpp.git /tmp/absl \
+ && cd /tmp/absl \
+ && cmake -S . -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/opt/vespa-deps \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+ && cmake --build build -j$(nproc) \
+ && cmake --install build \
+ && rm -rf /tmp/absl
+
+RUN git clone --recursive --branch v33.6 https://github.com/protocolbuffers/protobuf.git
+
+WORKDIR /tmp/protobuf
+
+RUN cmake -S . -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/opt/vespa-deps \
+      -Dprotobuf_BUILD_TESTS=OFF \
+      -Dprotobuf_ABSL_PROVIDER=module \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+ && cmake --build build -j"$(nproc)" \
+ && cmake --install build \
+ && rm -rf /tmp/protobuf
+
+RUN cd /tmp \
+ && git clone https://github.com/google/benchmark.git \
+ && cd benchmark \
+ && cmake -S . -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/opt/vespa-deps \
+      -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON \
+      -DBENCHMARK_ENABLE_GTEST_TESTS=OFF \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+ && cmake --build build -j"$(nproc)" \
+ && cmake --install build \
+ && rm -rf /tmp/benchmark
+
+RUN cd /tmp \
+&& git clone https://github.com/google/highway.git \
+&& cd highway \
+&& cmake -S . -B build \
+     -G Ninja \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DCMAKE_INSTALL_PREFIX=/opt/vespa-deps \
+     -DHWY_ENABLE_TESTS=OFF \
+     -DHWY_ENABLE_EXAMPLES=OFF \
+     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+&& cmake --build build -j"$(nproc)" \
+&& cmake --install build \
+&& rm -rf /tmp/highway
+
+RUN cd /tmp \
+&& git clone https://github.com/apache/datasketches-cpp.git \
+&& cd datasketches-cpp \
+&& cmake -S . -B build \
+     -G Ninja \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DCMAKE_INSTALL_PREFIX=/opt/vespa-deps \
+     -DBUILD_TESTS=OFF \
+     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+&& cmake --build build -j"$(nproc)" \
+&& cmake --install build \
+&& rm -rf /tmp/datasketches-cpp
 
 WORKDIR /
