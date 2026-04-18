@@ -40,4 +40,13 @@ RUN wget -O /tmp/clangd.zip https://github.com/clangd/clangd/releases/download/2
     mv /usr/local/clangd_22.1.0/lib/clang /usr/local/lib/ 2>/dev/null || true && \
     rm -rf /usr/local/clangd_22.1.0 /tmp/clangd.zip
 
+# Install ONNX Runtime
+RUN wget -O /tmp/onnxruntime.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.24.4/onnxruntime-linux-x64-1.24.4.tgz && \
+    tar -xzf /tmp/onnxruntime.tgz -C /opt && \
+    mv /opt/onnxruntime-linux-x64-1.24.4 /opt/onnxruntime && \
+    rm /tmp/onnxruntime.tgz && \
+    mkdir -p /opt/vespa-deps/include && \
+    ln -sf /opt/onnxruntime/include /opt/vespa-deps/include/onnxruntime && \
+    ln -sf /opt/onnxruntime/lib/libonnxruntime*.so* /opt/vespa-deps/lib/ 2>/dev/null || true
+
 WORKDIR /
