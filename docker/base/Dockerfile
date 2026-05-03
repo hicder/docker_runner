@@ -108,5 +108,6 @@ USER root
 
 # Add $user as sudoer - we might need this down the road.
 RUN usermod -aG sudo $user
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /

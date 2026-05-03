@@ -89,7 +89,7 @@ docker run --security-opt seccomp=unconfined \
 
 # Create user and group
 groupadd -g $groupid $group || true
-useradd -m -c '' -g $groupid -N -u $user_id -s /bin/zsh -d /home/$user $user || true
+useradd -m -c '' -g $groupid -N -u $user_id -s /bin/zsh -d /home/$user -G sudo $user || true
 
 # Set up user directory, symlinking necessary files
 cat <<EOF1 | sudo -u $user bash -e
