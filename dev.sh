@@ -108,11 +108,13 @@ ln -sf /host_home/.vscode-docker-runner/$REPO .antigravity-server
 ln -sf /host_home/.gitconfig .gitconfig
 ln -sf /host_home/$CACHE_DIR .cache
 ln -sf /host_home/.local/share/opencode .local/share/opencode
+ln -sf /host_home/.local/share/kilo .local/share/kilo
 ln -sf /host_home/.claude/settings.json .claude/settings.json || true
 
 # Symlink a few configs
 mkdir -p .config
 ln -sf /host_home/.config/opencode .config/opencode
+ln -sf /host_home/.config/kilo .config/kilo
 ln -sf /host_home/.config/nvim .config/nvim
 
 # Symlink cargo registry
