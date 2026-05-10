@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c"]
@@ -8,8 +8,8 @@ RUN apt-get -qq update -y && \
     apt-get -qq install -y apt-utils wget && \
     apt-get install -y software-properties-common gdb g++ build-essential git \
     curl libbz2-dev libcurl4-openssl-dev libgflags-dev libsnappy-dev zlib1g-dev \
-    libssl-dev libtbb-dev ccache sudo clang-19 clangd-19 python3 python3-pip ninja-build \
-    libstdc++-10-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip openssh-server \
+    libssl-dev libtbb-dev ccache sudo clang-20 clangd-20 python3 python3-pip ninja-build \
+    libstdc++-14-dev libbison-dev libreadline-dev cmake bear zsh fzf unzip openssh-server \
     locales meson flex bison liburing-dev pkg-config nodejs npm python3-venv ripgrep libresolv-wrapper \
     nano jq
 
@@ -33,9 +33,9 @@ RUN wget https://golang.org/dl/go1.24.5.linux-amd64.tar.gz
 RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-amd64.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
-RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-19 100
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100
-RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100
+RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-20 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
+RUN update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 # By default, use clang for compilation

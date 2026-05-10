@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:26.04
 
 ARG TARGETPLATFORM
 
@@ -8,7 +8,7 @@ RUN apt-get update \
     autoconf \
     bison \
     ca-certificates \
-    clang-10 \
+    clang-19 \
     cmake \
     curl \
     flex \
@@ -21,18 +21,18 @@ RUN apt-get update \
     lsof \
     make \
     netbase \
-    openjdk-8-jre \
+    openjdk-21-jre \
     openssh-client \
     patchelf \
     python-is-python3 \
     python3 \
-    python3.8-venv \
+    python3-venv \
     unzip \
     zip \
     nano \
     jq \
- && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 \
-    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-10 \
+ && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100 \
+    --slave /usr/bin/clang++ clang++ /usr/bin/clang++-19 \
  && apt-get clean
 
 # We need a newer version of cmake.
@@ -67,7 +67,7 @@ RUN apt-get update && \
 RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
  && echo 'deb https://packages.cloud.google.com/apt cloud-sdk main' | tee /etc/apt/sources.list.d/gcloud.list \
  && curl -fsLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | apt-key add - \
- && echo "deb https://packages.microsoft.com/repos/azure-cli/ focal main" > /etc/apt/sources.list.d/azure-cli.list \
+ && echo "deb https://packages.microsoft.com/repos/azure-cli/ resolute main" > /etc/apt/sources.list.d/azure-cli.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     azure-cli \

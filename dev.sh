@@ -81,6 +81,7 @@ mkdir -p ~/.gotools/$REPO/go/bin
 setup=$(mktemp ~/tmp/setup-XXXXXX.sh)
 
 docker run --security-opt seccomp=unconfined \
+ --device=/dev/kfd --device=/dev/dri --group-add=video \
  -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
  -d --name $container -v $HOME:/host_home --network host --cap-add SYS_PTRACE $TAG bash
 
