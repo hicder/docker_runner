@@ -2,7 +2,7 @@
 
 set -eu
 
-args=$(getopt -o '+hp:r:' -l 'help,project:,repo:' -- "$@")
+args=$(getopt -o '+hp:r:f' -l 'help,project:,repo:,force' -- "$@")
 eval set -- "$args"
 
 set +e
@@ -16,6 +16,7 @@ Options:
   -h, --help               Help
   -p, --project            Name for this container
   -r, --repo               Path to the repository
+  -f, --force              Force rebuild without Docker cache
 END
 set -e
 
@@ -33,6 +34,9 @@ while :; do
           REPO="$2"
           shift
           ;;
+      -f|--force)
+          FORCE=1
+          ;;
       --)
           shift
           break
@@ -49,4 +53,10 @@ user_id=$(id -u)
 group_id=$(id -g)
 group=$(id -gn)
 
-docker build --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest -f docker/$PROJECT/Dockerfile $REPO
+no_cache=""
+if [ "${FORCE:-0}" = "1" ]; then
+  echo "Force mode enabled -- disabling Docker cache"
+  no_cache="--no-cache"
+fi
+
+docker build $no_cache --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest -f docker/$PROJECT/Dockerfile $REPO
