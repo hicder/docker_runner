@@ -130,6 +130,7 @@ ENV AITER_ROCM_ARCH=gfx942;gfx950
 ENV MORI_GPU_ARCHS=gfx942;gfx950
 ENV HSA_NO_SCRATCH_RECLAIM=1
 ENV VLLM_TARGET_DEVICE=rocm
+ENV ROCM_HOME=/opt/rocm
 
 # Setup pip cache directory
 ENV PIP_CACHE_DIR=/opt/src/.cache/pip
