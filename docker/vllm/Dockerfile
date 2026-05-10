@@ -17,7 +17,7 @@ RUN apt-get update -y && \
     zlib1g-dev libbz2-dev pkg-config \
     gdb \
     # System tools
-    vim zsh tmux \
+    vim zsh tmux jq \
     # Additional tools for vLLM building
     libjpeg-dev libsox-dev libsox-fmt-all sox \
     libfmt-dev libmsgpack-dev libsuitesparse-dev \
