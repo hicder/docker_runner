@@ -61,10 +61,15 @@ SRC_ROOT=$REPO
 echo "Checking for container: $container"
 if docker ps --format "{{.Names}}" | grep -q "^${container}$"; then
     echo "Container $container is already running, attaching to it"
-    docker exec -it -u $user_id $container /bin/zsh
+    docker exec -it -e USER=$user -u $user_id $container /bin/zsh
+    exit 0
+elif docker ps -a --format "{{.Names}}" | grep -q "^${container}$"; then
+    echo "Container $container exists but is stopped. Starting and attaching..."
+    docker start $container
+    docker exec -it -e USER=$user -u $user_id $container /bin/zsh
     exit 0
 else
-    echo "Container $container is not currently running"
+    echo "Container $container is not currently running and does not exist"
 fi
 
 # Remove any stopped container with the same name
