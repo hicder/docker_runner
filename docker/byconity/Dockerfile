@@ -1,10 +1,11 @@
 FROM hicder/docker_runner_base:latest
 
 ARG user
+ARG TARGETARCH
 
 WORKDIR /tmp
 ARG FDB_VERSION=7.1.27
-RUN wget -qO foundationdb-clients.deb https://github.com/apple/foundationdb/releases/download/${FDB_VERSION}/foundationdb-clients_${FDB_VERSION}-1_amd64.deb
+RUN wget -qO foundationdb-clients.deb https://github.com/apple/foundationdb/releases/download/${FDB_VERSION}/foundationdb-clients_${FDB_VERSION}-1_${TARGETARCH}.deb
 RUN dpkg -i foundationdb-clients.deb && rm foundationdb-clients.deb
 RUN apt-get install -y automake binutils-dev bison byacc ccache flex libiberty-dev libtool maven zip python3 python-is-python3 \
         make cmake gcc g++ default-jdk git patch lld bzip2 \

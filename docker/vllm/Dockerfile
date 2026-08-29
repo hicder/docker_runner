@@ -55,11 +55,17 @@ ENV LANG=en_US.UTF-8
 ENV CCACHE_DIR=/opt/src/.cache
 
 # Install neovim
+ARG TARGETARCH
 RUN mkdir -p /opt/bin
 WORKDIR /opt/bin
-RUN wget -q https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-x86_64.tar.gz && \
-    tar xzvf nvim-linux-x86_64.tar.gz && \
-    rm -f nvim-linux-x86_64.tar.gz
+RUN case "${TARGETARCH}" in \
+      amd64) NVIM_ARCH=x86_64 ;; \
+      arm64) NVIM_ARCH=arm64 ;; \
+      *) echo "unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+ && wget -q https://github.com/neovim/neovim/releases/download/v0.11.2/nvim-linux-${NVIM_ARCH}.tar.gz \
+ && tar xzvf nvim-linux-${NVIM_ARCH}.tar.gz \
+ && rm -f nvim-linux-${NVIM_ARCH}.tar.gz
 
 # Add current user (for docker_runner compatibility)
 ARG group_id
@@ -81,10 +87,11 @@ RUN if [ "$group" != "root" ]; then groupadd -g $group_id $group || true; fi && 
     chmod 0440 /etc/sudoers.d/$user
 
 # Install Go as root before switching to user
+ARG TARGETARCH
 WORKDIR /tmp
-RUN curl -O https://dl.google.com/go/go1.23.4.linux-amd64.tar.gz && \
-    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz && \
-    rm -f go1.23.4.linux-amd64.tar.gz
+RUN curl -O https://dl.google.com/go/go1.23.4.linux-${TARGETARCH}.tar.gz && \
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-${TARGETARCH}.tar.gz && \
+    rm -f go1.23.4.linux-${TARGETARCH}.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 # Switch to user for final setup

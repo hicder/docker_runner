@@ -1,4 +1,5 @@
 FROM hicder/docker_runner_base:latest
+ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y \
     openjdk-17-jdk \
@@ -22,23 +23,30 @@ RUN apt-get update && apt-get install -y \
     libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-${TARGETARCH}
 
-# Install clangd 22.1.0
-RUN wget -O /tmp/clangd.zip https://github.com/clangd/clangd/releases/download/22.1.0/clangd-linux-22.1.0.zip && \
-    unzip -o /tmp/clangd.zip -d /usr/local && \
-    mv /usr/local/clangd_22.1.0/bin/clangd /usr/local/bin/clangd && \
-    mv /usr/local/clangd_22.1.0/lib/clang /usr/local/lib/ 2>/dev/null || true && \
-    rm -rf /usr/local/clangd_22.1.0 /tmp/clangd.zip
+# Official clangd Linux zip is x86_64 only; arm64 keeps clangd from the base image.
+RUN if [ "${TARGETARCH}" = "amd64" ]; then \
+      wget -O /tmp/clangd.zip https://github.com/clangd/clangd/releases/download/22.1.0/clangd-linux-22.1.0.zip && \
+      unzip -o /tmp/clangd.zip -d /usr/local && \
+      mv /usr/local/clangd_22.1.0/bin/clangd /usr/local/bin/clangd && \
+      mv /usr/local/clangd_22.1.0/lib/clang /usr/local/lib/ 2>/dev/null || true && \
+      rm -rf /usr/local/clangd_22.1.0 /tmp/clangd.zip; \
+    fi
 
 RUN mkdir -p /opt/vespa-deps/lib || true
 RUN mkdir -p /opt/vespa-deps/include || true
 
 # Install ONNX Runtime
-RUN wget -O /tmp/onnxruntime.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.24.4/onnxruntime-linux-x64-1.24.4.tgz && \
-    tar -xzf /tmp/onnxruntime.tgz -C /opt && \
-    mv /opt/onnxruntime-linux-x64-1.24.4 /opt/onnxruntime && \
-    rm /tmp/onnxruntime.tgz && \
+RUN case "${TARGETARCH}" in \
+      amd64) ONNX_ARCH=x64 ;; \
+      arm64) ONNX_ARCH=aarch64 ;; \
+      *) echo "unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+ && wget -O /tmp/onnxruntime.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.24.4/onnxruntime-linux-${ONNX_ARCH}-1.24.4.tgz \
+ && tar -xzf /tmp/onnxruntime.tgz -C /opt \
+ && mv /opt/onnxruntime-linux-${ONNX_ARCH}-1.24.4 /opt/onnxruntime \
+ && rm /tmp/onnxruntime.tgz && \
     mkdir -p /opt/vespa-deps/include && \
     ln -sf /opt/onnxruntime/include /opt/vespa-deps/include/onnxruntime && \
     ln -sf /opt/onnxruntime/lib/libonnxruntime*.so* /opt/vespa-deps/lib/
