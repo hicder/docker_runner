@@ -2,12 +2,11 @@
 
 set -eu
 
-args=$(getopt -o '+hf' -l 'help,force' -- "$@")
-eval set -- "$args"
+_script_dir=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=common.sh
+. "$_script_dir/common.sh"
 
-set +e
-read -r -d '' usage_str <<END
-Usage:
+usage_str="Usage:
   $0 [options...]
 
 Build base image
@@ -15,12 +14,13 @@ Build base image
 Options:
   -h, --help               Help
   -f, --force              Build without cache
-END
-set -e
+      --platform           Target platform (default: linux/<host-arch>)
+"
 
 FORCE=0
+PLATFORM=""
 
-while :; do
+while [[ $# -gt 0 ]]; do
   case "$1" in
       -h|--help)
           echo "$usage_str"
@@ -28,14 +28,32 @@ while :; do
           ;;
       -f|--force)
           FORCE=1
+          shift
+          ;;
+      --platform)
+          PLATFORM="$2"
+          shift 2
+          ;;
+      --platform=*)
+          PLATFORM="${1#*=}"
+          shift
           ;;
       --)
           shift
           break
           ;;
+      -*)
+          echo "Unknown option: $1" >&2
+          echo "$usage_str" >&2
+          exit 1
+          ;;
+      *)
+          break
+          ;;
   esac
-  shift
 done
+
+resolve_platform
 
 NO_CACHE_ARGS="--no-cache"
 
@@ -51,5 +69,5 @@ user_id=$(id -u)
 group_id=$(id -g)
 group=$(id -gn)
 
-docker build $NO_CACHE_ARGS --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t docker_runner_base:latest docker/base
+docker_with_platform build $NO_CACHE_ARGS --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t docker_runner_base:latest docker/base
 docker tag docker_runner_base:latest hicder/docker_runner_base:latest

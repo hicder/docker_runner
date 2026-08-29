@@ -1,4 +1,5 @@
 FROM ubuntu:26.04
+ARG TARGETARCH
 
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c"]
@@ -29,8 +30,9 @@ RUN apt-get -y install openssh-server locales \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://golang.org/dl/go1.24.5.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.24.5.linux-${TARGETARCH}.tar.gz && \
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.24.5.linux-${TARGETARCH}.tar.gz && \
+    rm -f go1.24.5.linux-${TARGETARCH}.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 RUN update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-20 100
@@ -44,11 +46,17 @@ ENV CC /usr/bin/clang
 
 # Install neovim 0.11.3 manually
 WORKDIR /tmp
-RUN wget https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-x86_64.tar.gz
-RUN tar -xzvf nvim-linux-x86_64.tar.gz
-RUN cp -r nvim-linux-x86_64/bin/* /usr/local/bin
-RUN cp -r nvim-linux-x86_64/share/* /usr/local/share
-RUN cp -r nvim-linux-x86_64/lib/* /usr/local/lib
+RUN case "${TARGETARCH}" in \
+      amd64) NVIM_ARCH=x86_64 ;; \
+      arm64) NVIM_ARCH=arm64 ;; \
+      *) echo "unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+ && wget https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-${NVIM_ARCH}.tar.gz \
+ && tar -xzvf nvim-linux-${NVIM_ARCH}.tar.gz \
+ && cp -r nvim-linux-${NVIM_ARCH}/bin/* /usr/local/bin \
+ && cp -r nvim-linux-${NVIM_ARCH}/share/* /usr/local/share \
+ && cp -r nvim-linux-${NVIM_ARCH}/lib/* /usr/local/lib \
+ && rm -rf nvim-linux-${NVIM_ARCH} nvim-linux-${NVIM_ARCH}.tar.gz
 
 RUN deluser ubuntu || true
 

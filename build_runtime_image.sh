@@ -2,12 +2,11 @@
 
 set -eu
 
-args=$(getopt -o '+hp:r:f' -l 'help,project:,repo:,force' -- "$@")
-eval set -- "$args"
+_script_dir=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=common.sh
+. "$_script_dir/common.sh"
 
-set +e
-read -r -d '' usage_str <<END
-Usage:
+usage_str="Usage:
   $0 [options...]
 
 Entry-point for the runtime image build script.
@@ -17,10 +16,13 @@ Options:
   -p, --project            Name for this container
   -r, --repo               Path to the repository
   -f, --force              Force rebuild without Docker cache
-END
-set -e
+      --platform           Target platform (default: linux/<host-arch>)
+"
 
-while :; do
+FORCE=0
+PLATFORM=""
+
+while [[ $# -gt 0 ]]; do
   case "$1" in
       -h|--help)
           echo "$usage_str"
@@ -28,22 +30,48 @@ while :; do
           ;;
       -p|--project)
           PROJECT="$2"
+          shift 2
+          ;;
+      --project=*)
+          PROJECT="${1#*=}"
           shift
           ;;
       -r|--repo)
           REPO="$2"
+          shift 2
+          ;;
+      --repo=*)
+          REPO="${1#*=}"
           shift
           ;;
       -f|--force)
           FORCE=1
+          shift
+          ;;
+      --platform)
+          PLATFORM="$2"
+          shift 2
+          ;;
+      --platform=*)
+          PLATFORM="${1#*=}"
+          shift
           ;;
       --)
           shift
           break
           ;;
+      -*)
+          echo "Unknown option: $1" >&2
+          echo "$usage_str" >&2
+          exit 1
+          ;;
+      *)
+          break
+          ;;
   esac
-  shift
 done
+
+resolve_platform
 
 echo "Buiding docker/$PROJECT"
 echo "Repo is $REPO"
@@ -59,4 +87,4 @@ if [ "${FORCE:-0}" = "1" ]; then
   no_cache="--no-cache"
 fi
 
-docker build $no_cache --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest -f docker/$PROJECT/Dockerfile $REPO
+docker_with_platform build $no_cache --build-arg user=$user --build-arg user_id=$user_id --build-arg group=$group --build-arg group_id=$group_id -t hicder/"$PROJECT"_runtime:latest -f docker/$PROJECT/Dockerfile $REPO

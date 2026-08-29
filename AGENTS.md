@@ -6,12 +6,16 @@ Docker-based build/run/dev environment for C++/Rust/Go projects. Containers run 
 
 ## Scripts (run from repo root)
 
+Containers are always Linux. `--platform` (same as Docker: `linux/amd64`, `linux/arm64`) selects the Linux architecture; default is `linux/<host-arch>`.
+
 | Command | Purpose |
 |---------|---------|
-| `./build_base_image.sh` | Build base image (`docker/base/Dockerfile`, Ubuntu 24.04, clang-19, go1.24.5, rust nightly, nvim 0.11.3, ccache) |
+| `./build_base_image.sh` | Build base image (`docker/base/Dockerfile`, Ubuntu 26.04, clang-20, go1.24.5, rust nightly, nvim 0.11.3, ccache) |
 | `./build_runtime_image.sh -p <project> -r <repo>` | Build `hicder/<project>_runtime:latest` from `docker/<project>/Dockerfile` |
 | `./build_code.sh -p <project> -r <repo> -- "<cmd>"` | Run a build command in a throwaway container |
 | `./dev.sh -p <project> -r <repo> -n <name>` | Start persistent dev container (VSCode Remote via SSH proxy) |
+
+All of the above accept `--platform linux/amd64` or `--platform linux/arm64`.
 
 ## Build flow
 

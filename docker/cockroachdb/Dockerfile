@@ -102,8 +102,14 @@ RUN case ${TARGETPLATFORM} in \
 
 # Install golang
 WORKDIR /tmp
-RUN wget https://storage.googleapis.com/public-bazel-artifacts/go/20250818-202337/go1.23.12.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.12.linux-amd64.tar.gz
+RUN case ${TARGETPLATFORM} in \
+    "linux/amd64") GO_TARBALL=https://storage.googleapis.com/public-bazel-artifacts/go/20250818-202337/go1.23.12.linux-amd64.tar.gz ;; \
+    "linux/arm64") GO_TARBALL=https://golang.org/dl/go1.23.12.linux-arm64.tar.gz ;; \
+    *) echo "unsupported TARGETPLATFORM: ${TARGETPLATFORM}" >&2; exit 1 ;; \
+  esac \
+ && wget "$GO_TARBALL" -O go.tar.gz \
+ && rm -rf /usr/local/go && tar -C /usr/local -xzf go.tar.gz \
+ && rm -f go.tar.gz
 ENV PATH="${PATH}:/usr/local/go/bin"
 
 # Install Bazelisk as Bazel.
