@@ -120,7 +120,7 @@ setup=$(make_setup_script)
 docker_with_platform run --security-opt seccomp=unconfined \
  $(gpu_device_args) \
  -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
- -d --name $container -v $HOME:/host_home $(host_network_args) --cap-add SYS_PTRACE $TAG bash
+ -d --name $container -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
 
  cat > $setup <<EOF
 #!/bin/bash -e
