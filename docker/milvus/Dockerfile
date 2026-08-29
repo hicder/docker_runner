@@ -10,7 +10,7 @@ RUN apt remove -y gcc g++ build-essential cmake clang-20 llvm clangd-20 libabsl2
 RUN apt autoremove -y
 
 # Install necessary packages to compile milvus
-RUN apt update && apt install -y libopenblas-dev liblapack-dev pkg-config gcc-12 g++-12 libcrypt-dev libaio-dev direnv make
+RUN apt update && apt install -y libopenblas-dev liblapack-dev pkg-config gcc-12 g++-12 libcrypt-dev libaio-dev direnv make libclang-21-dev
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-12 100
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
@@ -29,5 +29,6 @@ RUN curl -L https://github.com/axboe/liburing/archive/refs/tags/liburing-2.15.ta
 ENV GO111MODULE=on
 ENV CC=/usr/bin/gcc
 ENV CXX=/usr/bin/g++
+ENV CGO_LDFLAGS="-Wl,--no-as-needed -luring"
 
 WORKDIR /
