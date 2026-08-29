@@ -41,13 +41,6 @@ gpu_device_args() {
   echo "${out# }"
 }
 
-# --network host is reliable on Linux; Docker Desktop on Mac needs an opt-in.
-host_network_args() {
-  if [ "$(uname -s)" = "Linux" ]; then
-    echo "--network host"
-  fi
-}
-
 # Setup script in $HOME/tmp so the container can exec it via /host_home.
 # BSD mktemp (macOS) requires the X's at the end of the template.
 make_setup_script() {
