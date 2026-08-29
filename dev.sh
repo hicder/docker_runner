@@ -110,10 +110,17 @@ mkdir -p $HOME/$CACHE_DIR
 
 # Setup vscode things
 mkdir -p ~/.vscode-docker-runner/$REPO
-mkdir -p ~/.conan-docker-runner/$REPO
-mkdir -p ~/.conan2-docker-runner/$REPO
 mkdir -p ~/tmp
 mkdir -p ~/.gotools/$REPO/go/bin
+
+# Conan caches are Linux-specific; skip on Mac so we don't share them with the container.
+CONAN_LINKS=""
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    mkdir -p ~/.conan-docker-runner/$REPO
+    mkdir -p ~/.conan2-docker-runner/$REPO
+    CONAN_LINKS="ln -sf /host_home/.conan-docker-runner/$REPO .conan
+ln -sf /host_home/.conan2-docker-runner/$REPO .conan2"
+fi
 
 setup=$(make_setup_script)
 
@@ -148,8 +155,7 @@ ln -sf /host_home/$CACHE_DIR .cache
 ln -sf /host_home/.local/share/opencode .local/share/opencode
 ln -sf /host_home/.local/share/kilo .local/share/kilo
 ln -sf /host_home/.claude/settings.json .claude/settings.json || true
-ln -sf /host_home/.conan-docker-runner/$REPO .conan
-ln -sf /host_home/.conan2-docker-runner/$REPO .conan2
+$CONAN_LINKS
 
 # Symlink a few configs
 mkdir -p .config
