@@ -1,8 +1,15 @@
 FROM hicder/docker_runner_base:latest
 
-RUN curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-Linux-X64.tar.xz -o /tmp/llvm.tar.xz \
-    && mkdir -p /opt/llvm-22 \
-    && tar -xJf /tmp/llvm.tar.xz --strip-components=1 -C /opt/llvm-22 \
+ARG TARGETARCH
+
+RUN case "${TARGETARCH}" in \
+      amd64) LLVM_ARCH=X64 ;; \
+      arm64) LLVM_ARCH=ARM64 ;; \
+      *) echo "unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.0/LLVM-23.1.0-Linux-${LLVM_ARCH}.tar.xz -o /tmp/llvm.tar.xz \
+    && mkdir -p /opt/llvm-23 \
+    && tar -xJf /tmp/llvm.tar.xz --strip-components=1 -C /opt/llvm-23 \
     && rm /tmp/llvm.tar.xz
 
 # Need to remove default gcc/g++ (and old clang) so only gcc-12/g++-12 remain
