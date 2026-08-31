@@ -107,6 +107,7 @@ RUN curl -L https://github.com/axboe/liburing/archive/refs/tags/liburing-2.15.ta
     && rm -rf /tmp/liburing.tar.gz /tmp/liburing-liburing-2.15
 
 ENV CGO_LDFLAGS="-Wl,--no-as-needed -luring"
+ENV CMAKE_EXTRA_ARGS="-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-as-needed,-luring"
 
 # Add current user
 ARG group_id
