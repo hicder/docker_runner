@@ -94,6 +94,7 @@ RUN curl -L https://github.com/axboe/liburing/archive/refs/tags/liburing-2.15.ta
 
 ENV GO111MODULE=on
 ENV CGO_LDFLAGS="-Wl,--no-as-needed -luring"
+ENV CMAKE_EXTRA_ARGS="-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-as-needed,-luring"
 
 RUN deluser ubuntu || true
 
