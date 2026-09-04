@@ -124,8 +124,14 @@ fi
 
 setup=$(make_setup_script)
 
+SSH_AGENT_ARGS=()
+if [[ -n "${SSH_AUTH_SOCK:-}" && -S "$SSH_AUTH_SOCK" ]]; then
+    SSH_AGENT_ARGS=(-v "$SSH_AUTH_SOCK:/ssh-agent" -e SSH_AUTH_SOCK=/ssh-agent)
+fi
+
 docker_with_platform run --security-opt seccomp=unconfined \
  $(gpu_device_args) \
+ "${SSH_AGENT_ARGS[@]}" \
  -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
  -d --name $container -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
 
