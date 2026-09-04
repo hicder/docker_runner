@@ -101,6 +101,8 @@ group=$(id -gn)
 groupid=$(id -g)
 container=$CONTAINER_NAME
 SRC_ROOT=$REPO
+REPO_NAME=$(basename -- "${SRC_ROOT%/}")
+CONTAINER_SRC=/opt/src/$REPO_NAME
 : "${EXTRA_DOCKER_RUN_ARGS:=}"
 
 # Check if container is already running
@@ -149,7 +151,7 @@ fi
 docker_with_platform run --security-opt seccomp=unconfined \
  $(gpu_device_args) \
  "${SSH_AGENT_ARGS[@]}" \
- -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
+ -it --init -v "$SRC_ROOT:$CONTAINER_SRC" -w "$CONTAINER_SRC" \
  -d --name $container -p "$SSH_PORT:22" -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
 
  cat > $setup <<EOF
@@ -235,7 +237,7 @@ copy_var \
     LSAN_OPTIONS \
     >> /home/$user/.bashrc
 
-cd /opt/src
+cd "$CONTAINER_SRC"
 
 EOF
 chmod 0755 $setup
