@@ -16,10 +16,12 @@ Options:
   -r, --repo               Path to the repository
   -p, --project            Name for the project
   -n, --container_name     Container name to start
+      --ssh-port           Host port to bind to container port 22
       --platform           Target platform (default: linux/<host-arch>)
 "
 
 PLATFORM=""
+SSH_PORT=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -51,6 +53,14 @@ while [[ $# -gt 0 ]]; do
           CONTAINER_NAME="${1#*=}"
           shift
           ;;
+      --ssh-port)
+          SSH_PORT="$2"
+          shift 2
+          ;;
+      --ssh-port=*)
+          SSH_PORT="${1#*=}"
+          shift
+          ;;
       --platform)
           PLATFORM="$2"
           shift 2
@@ -76,6 +86,12 @@ done
 
 resolve_platform
 
+if [[ ! "$SSH_PORT" =~ ^[0-9]+$ ]] || (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
+    echo "--ssh-port must be an integer between 1 and 65535" >&2
+    echo "$usage_str" >&2
+    exit 1
+fi
+
 TAG=hicder/"$PROJECT"_runtime:latest
 echo "Run with tag $TAG, project $PROJECT, container name $CONTAINER_NAME"
 
@@ -96,6 +112,7 @@ if docker ps --format "{{.Names}}" | grep -q "^${container}$"; then
 elif docker ps -a --format "{{.Names}}" | grep -q "^${container}$"; then
     echo "Container $container exists but is stopped. Starting and attaching..."
     docker start $container
+    docker exec -d $container /usr/sbin/sshd -D
     docker exec -it -e USER=$user -u $user_id $container /bin/zsh
     exit 0
 else
@@ -133,7 +150,7 @@ docker_with_platform run --security-opt seccomp=unconfined \
  $(gpu_device_args) \
  "${SSH_AGENT_ARGS[@]}" \
  -it --init -v $SRC_ROOT:/opt/src -w /opt/src \
- -d --name $container -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
+ -d --name $container -p "$SSH_PORT:22" -v $HOME:/host_home --cap-add SYS_PTRACE $TAG bash
 
  cat > $setup <<EOF
 #!/bin/bash -e
@@ -225,6 +242,8 @@ chmod 0755 $setup
 
 # Run setup script
 docker exec $container /host_home/tmp/$(basename $setup)
+
+docker exec -d $container /usr/sbin/sshd -D
 
 # docker attach $container
 docker exec -it -e USER=$user -u $user_id $container /bin/zsh
