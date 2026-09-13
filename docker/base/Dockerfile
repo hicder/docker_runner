@@ -18,7 +18,7 @@ ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
 # ccache location
-ENV CCACHE_DIR /opt/src/.cache # Force linking libraries
+ENV CCACHE_DIR /opt/src/.cache
 RUN ldconfig
 
 # This is so that VSCode can open a Remote Development session to this container
