@@ -105,16 +105,39 @@ REPO_NAME=$(basename -- "${SRC_ROOT%/}")
 CONTAINER_SRC=/opt/src/$REPO_NAME
 : "${EXTRA_DOCKER_RUN_ARGS:=}"
 
+# Start sshd in the container unless it is already running, so VSCode Remote can connect.
+ensure_sshd() {
+    if docker exec "$container" pgrep -x sshd >/dev/null 2>&1; then
+        echo "sshd is already running in $container"
+        return 0
+    fi
+
+    echo "Starting sshd in $container"
+    # ssh-keygen -A only creates host keys that are missing.
+    docker exec "$container" bash -c 'mkdir -p /run/sshd && ssh-keygen -A >/dev/null'
+    docker exec -d "$container" /usr/sbin/sshd -D
+
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+        if docker exec "$container" pgrep -x sshd >/dev/null 2>&1; then
+            return 0
+        fi
+        sleep 0.2
+    done
+
+    echo "Warning: sshd did not come up in $container" >&2
+}
+
 # Check if container is already running
 echo "Checking for container: $container"
 if docker ps --format "{{.Names}}" | grep -q "^${container}$"; then
     echo "Container $container is already running, attaching to it"
+    ensure_sshd
     docker exec -it -e USER=$user -u $user_id $container /bin/zsh
     exit 0
 elif docker ps -a --format "{{.Names}}" | grep -q "^${container}$"; then
     echo "Container $container exists but is stopped. Starting and attaching..."
     docker start $container
-    docker exec -d $container /usr/sbin/sshd -D
+    ensure_sshd
     docker exec -it -e USER=$user -u $user_id $container /bin/zsh
     exit 0
 else
@@ -245,7 +268,7 @@ chmod 0755 $setup
 # Run setup script
 docker exec $container /host_home/tmp/$(basename $setup)
 
-docker exec -d $container /usr/sbin/sshd -D
+ensure_sshd
 
 # docker attach $container
 docker exec -it -e USER=$user -u $user_id $container /bin/zsh
